@@ -1,28 +1,30 @@
 # Resource Monitoring Script
 
-This project contains a script that monitors CPU, RAM, and disk usage on the current machine and sends alerts to a Telegram group if the usage exceeds specified thresholds. There are two levels of alerts: `Warning` and `Agent`, based on the severity of the resource usage.
+This script monitors the CPU, RAM, and disk usage of a server and sends alerts via Telegram based on configurable thresholds. It computes the average CPU usage over three consecutive readings for greater accuracy and sends notifications when resource usage exceeds warning and critical levels. Additionally, it notifies when usage returns to normal.
 
 ## Features
 
-- **Monitors CPU, RAM, and Disk Usage**: Continuously monitors system resource usage.
-- **Alerts via Telegram**: Sends alerts to a Telegram group when resource usage exceeds warning and critical (agent) thresholds.
-- **Recovery Notifications**: Sends a notification when resource usage returns to normal after a warning or agent alert.
-- **Customizable Thresholds**: You can configure usage thresholds for warnings and agent alerts.
-- **Customizable Messages**: Allows you to customize the alert messages, including mentioning multiple users.
+- **Monitors CPU, RAM, and Disk Usage**: Continuously monitors system resources at regular intervals.
+- **Threshold Alerts**: Sends alerts for two levels of resource usage:
+  - **Warning**: When CPU, RAM, or disk usage exceeds a warning threshold (e.g., 80%).
+  - **Agent (Critical)**: When CPU, RAM, or disk usage exceeds a critical threshold (e.g., 90%).
+- **Telegram Alerts**: Sends alerts to a specified Telegram group using the Telegram Bot API.
+- **Recovery Notifications**: Notifies when the resource usage returns to normal.
+- **Customizable Alert Messages**: Includes symbols to indicate warning (`⚠️`), critical alerts (`🔴`), and good status (`✅`).
 
 ## Requirements
 
-- Bash
-- `curl` (pre-installed on most Unix-based systems)
-- Docker and Docker Compose (optional, if containerizing the script)
-- Telegram Bot API token and Group Chat ID
+- **Bash**
+- `top`, `free`, `df` (available on most Unix-based systems)
+- `curl` for sending Telegram messages
+- A Telegram bot token and group chat ID
 
 ## Setup
 
 ### 1. Clone or Download the Repository
 
 ```bash
-git clone https://github.com/your-repo/resource-monitor-script.git
+git clone https://github.com/kiennd/monitor-resource.git
 cd resource-monitor-script
 ```
 
@@ -33,13 +35,16 @@ Create a `.env` file in the root of the project directory with the following con
 ```bash
 # .env file
 
-# Telegram Bot API token
+# Server name for identification (optional, will use hostname if not set)
+SERVER_NAME="MyServer"
+
+# Telegram Bot API token (from BotFather)
 TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
 
-# Telegram Group Chat ID
-TELEGRAM_GROUP_CHAT_ID="-4081396404"
+# Telegram Group Chat ID (make sure it's correct, with - for groups)
+TELEGRAM_GROUP_CHAT_ID="-1001234567890"
 
-# Warning and Agent thresholds
+# Warning and Agent (Critical) thresholds for CPU, RAM, and Disk
 CPU_THRESHOLD_WARNING=80
 CPU_THRESHOLD_AGENT=90
 RAM_THRESHOLD_WARNING=80
@@ -48,99 +53,57 @@ DISK_THRESHOLD_WARNING=80
 DISK_THRESHOLD_AGENT=90
 
 # Alert message format
-# Available placeholders: {resource}, {usage}, {level}, {mention}
-WARNING_MESSAGE_FORMAT="Warning: {resource} usage is at {usage}%. {mention}"
-AGENT_MESSAGE_FORMAT="Agent Alert: {resource} usage is at {usage}%. Immediate attention required! {mention}"
-GOOD_MESSAGE_FORMAT="{resource} usage is back to normal. {mention}"
+# Available placeholders: {resource}, {usage}, {mention}, {server}
+WARNING_MESSAGE_FORMAT="⚠️ Warning: {resource} usage is at {usage}% on {server}. {mention}"
+AGENT_MESSAGE_FORMAT="🔴 Agent Alert: {resource} usage is at {usage}% on {server}. Immediate attention required! {mention}"
+GOOD_MESSAGE_FORMAT="✅ {resource} usage is back to normal on {server}. {mention}"
 
-# Multiple mentions
+# Telegram user mentions (optional)
 ALERT_MENTION="@user1 @user2 @user3"
 ```
 
-In this example:
-- **TELEGRAM_BOT_TOKEN**: Your Telegram bot token.
-- **TELEGRAM_GROUP_CHAT_ID**: The ID of your Telegram group where alerts will be sent.
-- **ALERT_MENTION**: The Telegram usernames of the people to mention in the alert.
+### 3. Set Up and Run the Monitoring Script
 
-### 3. Run the Monitoring Script
-
-You can run the script directly on your machine.
-
-1. Make the script executable:
-
-   ```bash
-   chmod +x monitor_resources.sh
-   ```
-
-2. Run the script:
-
-   ```bash
-   ./monitor_resources.sh
-   ```
-
-The script will continuously monitor the system resources and send alerts to the Telegram group if the resource usage exceeds the defined thresholds.
-
-### 4. Run the Script in a Docker Container (Optional)
-
-You can run the script inside a Docker container. Here’s how to set up and run it using Docker and Docker Compose.
-
-#### 1. Build the Docker Image
+Make the script executable and run it.
 
 ```bash
-docker-compose build
+chmod +x monitor_resources.sh
+./monitor_resources.sh
 ```
-
-#### 2. Run the Container
-
-```bash
-docker-compose up -d
-```
-
-This will start the container in detached mode, and it will continuously monitor the system resources inside the container.
 
 ### Monitoring Thresholds
 
-- **Warning**: When CPU, RAM, or disk usage exceeds 80% (or any other threshold defined in the `.env` file).
-- **Agent Alert**: When CPU, RAM, or disk usage exceeds 90% (or any other critical threshold defined in the `.env` file).
-- **Good Alert**: When usage falls back below the warning threshold after a warning or agent alert.
+You can customize the thresholds in the `.env` file for CPU, RAM, and disk usage:
 
-## Example Alerts
+- **Warning Threshold**: When usage exceeds this percentage, a warning is sent.
+- **Agent (Critical) Threshold**: When usage exceeds this percentage, a critical alert is sent.
+
+### Example Alerts
 
 - **Warning Message**:
-
   ```
-  Warning: CPU usage is at 85%. @user1 @user2 @user3
+  ⚠️ Warning: CPU usage is at 85% on MyServer. @user1 @user2 @user3
   ```
 
 - **Agent Alert Message**:
-
   ```
-  Agent Alert: Disk usage is at 95%. Immediate attention required! @user1 @user2 @user3
-  ```
-
-- **Good Alert Message**:
-
-  ```
-  CPU usage is back to normal. @user1 @user2 @user3
+  🔴 Agent Alert: RAM usage is at 95% on MyServer. Immediate attention required! @user1 @user2 @user3
   ```
 
-## Project Structure
+- **Good Status Message**:
+  ```
+  ✅ Disk usage is back to normal on MyServer. @user1 @user2 @user3
+  ```
 
-Your project should look like this:
+### Project Structure
 
 ```
 /project-root
 │
-├── .env
-├── Dockerfile
-├── docker-compose.yml
-└── monitor_resources.sh
+├── .env                 # Environment configuration
+├── monitor_resources.sh  # Resource monitoring script
+└── README.md            # Project documentation
 ```
-
-- **.env**: Holds environment variables like Telegram API tokens and resource thresholds.
-- **Dockerfile**: Used to containerize the monitoring script.
-- **docker-compose.yml**: Automates building and running the container using Docker Compose.
-- **monitor_resources.sh**: The Bash script that monitors the system resources and sends alerts.
 
 ## License
 
