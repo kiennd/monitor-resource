@@ -11,7 +11,6 @@ WORKDIR /app
 
 # Copy the monitor_resources.sh script and .env file into the container
 COPY monitor_resources.sh /app/monitor_resources.sh
-COPY .env /app/.env
 
 # Make the script executable
 RUN chmod +x /app/monitor_resources.sh
