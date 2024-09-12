@@ -90,20 +90,20 @@ while true; do
   #########################
   if (( $(echo "$cpu_usage > $CPU_THRESHOLD_AGENT" | bc -l) )); then
     if [ "$cpu_agent_sent" = false ]; then
-      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{usage}|$cpu_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{usage}|$cpu_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       cpu_agent_sent=true
     fi
   elif (( $(echo "$cpu_usage > $CPU_THRESHOLD_WARNING" | bc -l) )); then
     if [ "$cpu_warning_sent" = false ]; then
-      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{usage}|$cpu_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{usage}|$cpu_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       cpu_warning_sent=true
     fi
     cpu_agent_sent=false
   else
     if [ "$cpu_warning_sent" = true ] || [ "$cpu_agent_sent" = true ]; then
-      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|CPU|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       cpu_warning_sent=false
       cpu_agent_sent=false
@@ -115,20 +115,20 @@ while true; do
   #########################
   if (( $(echo "$ram_usage > $RAM_THRESHOLD_AGENT" | bc -l) )); then
     if [ "$ram_agent_sent" = false ]; then
-      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{usage}|$ram_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{usage}|$ram_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       ram_agent_sent=true
     fi
   elif (( $(echo "$ram_usage > $RAM_THRESHOLD_WARNING" | bc -l) )); then
     if [ "$ram_warning_sent" = false ]; then
-      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{usage}|$ram_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{usage}|$ram_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       ram_warning_sent=true
     fi
     ram_agent_sent=false
   else
     if [ "$ram_warning_sent" = true ] || [ "$ram_agent_sent" = true ]; then
-      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|RAM|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       ram_warning_sent=false
       ram_agent_sent=false
@@ -140,20 +140,20 @@ while true; do
   #########################
   if (( $(echo "$disk_usage > $DISK_THRESHOLD_AGENT" | bc -l) )); then
     if [ "$disk_agent_sent" = false ]; then
-      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{usage}|$disk_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$AGENT_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{usage}|$disk_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       disk_agent_sent=true
     fi
   elif (( $(echo "$disk_usage > $DISK_THRESHOLD_WARNING" | bc -l) )); then
     if [ "$disk_warning_sent" = false ]; then
-      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{usage}|$disk_usage|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$WARNING_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{usage}|$disk_usage|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       disk_warning_sent=true
     fi
     disk_agent_sent=false
   else
     if [ "$disk_warning_sent" = true ] || [ "$disk_agent_sent" = true ]; then
-      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{mention}|$ALERT_MENTION|g")
+      message=$(echo "$GOOD_MESSAGE_FORMAT" | sed "s|{resource}|Disk|g" | sed "s|{server}|$SERVER_NAME" | sed "s|{mention}|$ALERT_MENTION|g")
       send_alert "$message"
       disk_warning_sent=false
       disk_agent_sent=false
