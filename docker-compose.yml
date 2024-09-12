@@ -1,0 +1,8 @@
+version: '3'
+services:
+  resource_monitor:
+    build: .
+    container_name: resource-monitor-container
+    env_file:
+      - .env
+    restart: always
